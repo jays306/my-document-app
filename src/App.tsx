@@ -190,7 +190,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>File Upload</h1>
+        <h1>Document Parsing Application</h1>
         <form onSubmit={handleSubmit}>
           <div className="file-upload-container">
             <input
