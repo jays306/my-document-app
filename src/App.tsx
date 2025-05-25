@@ -9,6 +9,8 @@ function App() {
   const [isFinalizing, setIsFinalizing] = useState(false);
   const [parsedResult, setParsedResult] = useState<Record<string, any> | null>(null);
   const [formValues, setFormValues] = useState<Record<string, string>>({});
+  const [documentType, setDocumentType] = useState<string>('form_941');
+  const [parsedDocumentType, setParsedDocumentType] = useState<string>('');
   const [modalConfig, setModalConfig] = useState<{
     isOpen: boolean;
     title: string;
@@ -44,6 +46,7 @@ function App() {
       // Clear previous parsed result and form values
       setParsedResult(null);
       setFormValues({});
+      setParsedDocumentType(''); // Reset parsed document type
     }
   };
 
@@ -66,8 +69,7 @@ function App() {
     try {
       const formData = new FormData();
       formData.append('file', selectedFile);
-
-      console.log('Attempting to send file:', selectedFile.name);
+      formData.append('document_type', documentType);
       
       const response = await fetch('http://localhost:8080/parse-document', {
         method: 'POST',
@@ -97,9 +99,9 @@ function App() {
       }
 
       const data = await response.json();
-      console.log('Success:', data);
       const parsedData = data.parsed_result || {};
       setParsedResult(parsedData);
+      setParsedDocumentType(data.document_type || documentType); // Store the document type from response
       // Initialize form values with the parsed result
       const initialValues: Record<string, string> = {};
       Object.keys(parsedData).forEach(key => {
@@ -130,6 +132,7 @@ function App() {
     try {
       const requestBody = {
         document_name: selectedFile?.name || 'unknown',
+        document_type: parsedDocumentType, // Use the document type from parse response
         parsed_fields: formValues
       };
 
@@ -201,6 +204,20 @@ function App() {
                 Selected file: {selectedFile.name}
               </p>
             )}
+          </div>
+          <div className="document-type-container">
+            <label htmlFor="documentType" className="document-type-label">
+              Document Type:
+            </label>
+            <select
+              id="documentType"
+              value={documentType}
+              onChange={(e) => setDocumentType(e.target.value)}
+              className="document-type-select"
+            >
+              <option value="form_941">Form 941</option>
+              <option value="job_details">Job Details</option>
+            </select>
           </div>
           <button 
             type="submit" 

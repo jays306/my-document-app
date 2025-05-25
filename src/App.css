@@ -199,3 +199,46 @@
   background-color: #cccccc;
   cursor: not-allowed;
 }
+
+.document-type-container {
+  margin: 15px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.document-type-label {
+  font-size: 16px;
+  color: #61dafb;
+  font-weight: 500;
+}
+
+.document-type-select {
+  padding: 8px 12px;
+  border: 1px solid #61dafb;
+  border-radius: 4px;
+  font-size: 16px;
+  background-color: #282c34;
+  color: #ffffff;
+  cursor: pointer;
+  min-width: 150px;
+  transition: all 0.3s;
+}
+
+.document-type-select:hover {
+  border-color: #4fa8c7;
+  background-color: #32363f;
+}
+
+.document-type-select:focus {
+  outline: none;
+  border-color: #4fa8c7;
+  box-shadow: 0 0 0 2px rgba(97, 218, 251, 0.2);
+  background-color: #32363f;
+}
+
+.document-type-select option {
+  background-color: #282c34;
+  color: #ffffff;
+}
