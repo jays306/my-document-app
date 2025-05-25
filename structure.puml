@@ -1,0 +1,74 @@
+@startuml React File Upload Application
+
+' Styling
+skinparam backgroundColor white
+skinparam handwritten false
+skinparam defaultFontName Arial
+skinparam componentStyle uml2
+
+' Main Component
+package "App Component" {
+    [App] as app
+}
+
+' State Management
+package "State Management" {
+    [selectedFile: File | null] as state1
+    [fileUrl: string | null] as state2
+}
+
+' UI Components
+package "UI Components" {
+    package "Form" {
+        [File Input] as input
+        [Selected File Display] as display
+        [Submit Button] as button
+    }
+    [Header] as header
+}
+
+' Event Handlers
+package "Event Handlers" {
+    [handleFileChange] as handler1
+    [handleSubmit] as handler2
+    [handleDownload] as handler3
+}
+
+' Backend
+[Backend API] as api
+
+' Relationships
+app --> state1
+app --> state2
+app --> header
+app --> input
+app --> display
+app --> button
+
+handler1 --> state1 : updates
+handler1 --> state2 : creates
+handler2 --> api : POST request
+handler3 --> state2 : opens
+
+' Notes
+note right of state1
+  Stores the selected file
+end note
+
+note right of state2
+  Stores the file URL for download
+end note
+
+note right of handler1
+  Triggered on file selection
+end note
+
+note right of handler2
+  Handles form submission
+end note
+
+note right of handler3
+  Handles file download
+end note
+
+@enduml 
