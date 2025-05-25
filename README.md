@@ -1,4 +1,4 @@
-# Document Parser React App
+# Document Parsing Application
 
 A React application for uploading and parsing documents, with support for various file formats including PDF, DOC, DOCX, PNG, and CSV.
 
@@ -21,8 +21,8 @@ A React application for uploading and parsing documents, with support for variou
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/jays306/my-react-app.git
-cd my-react-app
+git clone https://github.com/jays306/my-document-app.git
+cd my-document-app
 ```
 
 2. Install dependencies:
