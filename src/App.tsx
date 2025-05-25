@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './App.css';
+import Modal from './components/Modal';
 
 function App() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -8,6 +9,30 @@ function App() {
   const [isFinalizing, setIsFinalizing] = useState(false);
   const [parsedResult, setParsedResult] = useState<Record<string, any> | null>(null);
   const [formValues, setFormValues] = useState<Record<string, string>>({});
+  const [modalConfig, setModalConfig] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    type: 'success' | 'error' | 'info';
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    type: 'info'
+  });
+
+  const showModal = (title: string, message: string, type: 'success' | 'error' | 'info' = 'info') => {
+    setModalConfig({
+      isOpen: true,
+      title,
+      message,
+      type
+    });
+  };
+
+  const closeModal = () => {
+    setModalConfig(prev => ({ ...prev, isOpen: false }));
+  };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -33,7 +58,7 @@ function App() {
     event.preventDefault();
     
     if (!selectedFile) {
-      alert('Please select a file first!');
+      showModal('Error', 'Please select a file first!', 'error');
       return;
     }
 
@@ -81,7 +106,7 @@ function App() {
         initialValues[key] = parsedData[key]?.toString() || '';
       });
       setFormValues(initialValues);
-      alert('Document parsed successfully!');
+      showModal('Success', 'Document parsed successfully!', 'success');
     } catch (error: any) {
       console.error('Detailed error:', {
         name: error.name,
@@ -89,7 +114,7 @@ function App() {
         stack: error.stack,
         cause: error.cause
       });
-      alert(`Error parsing document: ${error.message}`);
+      showModal('Error', `Error parsing document: ${error.message}`, 'error');
     } finally {
       setIsLoading(false);
     }
@@ -97,20 +122,40 @@ function App() {
 
   const handleFinalize = async () => {
     if (!parsedResult) {
-      alert('No parsed fields to finalize!');
+      showModal('Error', 'No parsed fields to finalize!', 'error');
       return;
     }
 
     setIsFinalizing(true);
     try {
+      const requestBody = {
+        document_name: selectedFile?.name || 'unknown',
+        parsed_fields: formValues
+      };
+
+      console.log('Sending finalize request with body:', requestBody);
+      
       const response = await fetch('http://localhost:8080/finalize-parsed-fields', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: JSON.stringify(formValues),
+        body: JSON.stringify(requestBody),
         mode: 'cors'
+      }).catch(error => {
+        console.error('Network error details:', {
+          message: error.message,
+          cause: error.cause,
+          type: error.type,
+          name: error.name
+        });
+        throw error;
+      });
+
+      console.log('Response received:', {
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries())
       });
 
       if (!response.ok) {
@@ -125,7 +170,7 @@ function App() {
 
       const data = await response.json();
       console.log('Finalization success:', data);
-      alert('Fields finalized successfully!');
+      showModal('Success', 'Fields finalized successfully!', 'success');
     } catch (error: any) {
       console.error('Finalization error:', {
         name: error.name,
@@ -133,7 +178,7 @@ function App() {
         stack: error.stack,
         cause: error.cause
       });
-      alert(`Error finalizing fields: ${error.message}`);
+      showModal('Error', `Error finalizing fields: ${error.message}`, 'error');
     } finally {
       setIsFinalizing(false);
     }
@@ -214,6 +259,13 @@ function App() {
           </div>
         )}
       </header>
+      <Modal
+        isOpen={modalConfig.isOpen}
+        onClose={closeModal}
+        title={modalConfig.title}
+        message={modalConfig.message}
+        type={modalConfig.type}
+      />
     </div>
   );
 }
