@@ -1,74 +1,96 @@
-@startuml React File Upload Application
-
-' Styling
+@startuml
+!theme plain
+skinparam componentStyle uml2
 skinparam backgroundColor white
 skinparam handwritten false
 skinparam defaultFontName Arial
-skinparam componentStyle uml2
 
-' Main Component
-package "App Component" {
-    [App] as app
+' Title
+title Document Parsing Application - React TypeScript
+
+' Main Application Structure
+package "src" {
+    [App.tsx] as App #lightblue
+    package "components" {
+        [Modal.tsx] as Modal #lightgreen
+        [Modal.css] as ModalCSS
+    }
+    [App.css] as AppCSS
+    [index.tsx] as Index
+    [index.css] as IndexCSS
+    [reportWebVitals.ts] as WebVitals
+    [setupTests.ts] as Tests
+    [App.test.tsx] as AppTest
+}
+
+' API Integration
+package "API Endpoints" {
+    [parse-document] as ParseEndpoint #lightyellow
+    [finalize-parsed-fields] as FinalizeEndpoint #lightyellow
 }
 
 ' State Management
 package "State Management" {
-    [selectedFile: File | null] as state1
-    [fileUrl: string | null] as state2
+    [File Selection] as FileState
+    [Document Parsing] as ParseState
+    [Form Values] as FormState
+    [Modal State] as ModalState
 }
 
-' UI Components
-package "UI Components" {
-    package "Form" {
-        [File Input] as input
-        [Selected File Display] as display
-        [Submit Button] as button
-    }
-    [Header] as header
+' Features
+package "Features" {
+    [File Upload] as FileUpload
+    [Document Parsing] as DocParsing
+    [Form Handling] as FormHandling
+    [Error Handling] as ErrorHandling
+    [Modal Notifications] as Notifications
 }
-
-' Event Handlers
-package "Event Handlers" {
-    [handleFileChange] as handler1
-    [handleSubmit] as handler2
-    [handleDownload] as handler3
-}
-
-' Backend
-[Backend API] as api
 
 ' Relationships
-app --> state1
-app --> state2
-app --> header
-app --> input
-app --> display
-app --> button
+App --> Modal : uses
+Modal --> ModalCSS : styles
+App --> AppCSS : styles
+Index --> App : renders
+Index --> IndexCSS : styles
 
-handler1 --> state1 : updates
-handler1 --> state2 : creates
-handler2 --> api : POST request
-handler3 --> state2 : opens
+' State Relationships
+App --> FileState : manages
+App --> ParseState : manages
+App --> FormState : manages
+App --> ModalState : manages
+
+' API Relationships
+App --> ParseEndpoint : POST /parse-document
+App --> FinalizeEndpoint : POST /finalize-parsed-fields
+
+' Feature Implementation
+App --> FileUpload : implements
+App --> DocParsing : implements
+App --> FormHandling : implements
+App --> ErrorHandling : implements
+App --> Notifications : implements
 
 ' Notes
-note right of state1
-  Stores the selected file
+note right of App
+  Main application component
+  handling document parsing
+  and form management
 end note
 
-note right of state2
-  Stores the file URL for download
+note right of Modal
+  Reusable modal component
+  for notifications and
+  error messages
 end note
 
-note right of handler1
-  Triggered on file selection
+note right of ParseEndpoint
+  Handles document parsing
+  and field extraction
 end note
 
-note right of handler2
-  Handles form submission
-end note
-
-note right of handler3
-  Handles file download
+note right of FinalizeEndpoint
+  Processes and saves
+  parsed form fields
 end note
 
 @enduml 
